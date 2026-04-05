@@ -1,3 +1,4 @@
+![EventImpact Preview](docs/preview.png)
 # EventImpact
 
 > 新聞事件驅動的台股股價預測系統
