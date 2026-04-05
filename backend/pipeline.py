@@ -5,8 +5,6 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from backend.crawler.news_fetcher import fetch_cnyes_news
 from backend.crawler.stock_fetcher import fetch_stock_history
 
-from crawler.news_fetcher import fetch_cnyes_news
-from crawler.stock_fetcher import fetch_stock_history
 from groq import Groq
 from dotenv import load_dotenv
 from transformers import pipeline as hf_pipeline
@@ -27,12 +25,18 @@ TICKER_NAME = {
 }
 
 # ── 1. 情緒分析 ───────────────────────────────────────────────
-print("[載入] FinBERT 模型中，首次需要下載約400MB...")
-sentiment_model = hf_pipeline(
-    "text-classification",
-    model="ProsusAI/finbert",
-    top_k=None
-)
+_sentiment_model = None
+
+def get_sentiment_model():
+    global _sentiment_model
+    if _sentiment_model is None:
+        print("[載入] FinBERT 模型中...")
+        _sentiment_model = hf_pipeline(
+            "text-classification",
+            model="ProsusAI/finbert",
+            top_k=None
+        )
+    return _sentiment_model
 
 def analyze_sentiment(texts: list[str]) -> pd.DataFrame:
     """
