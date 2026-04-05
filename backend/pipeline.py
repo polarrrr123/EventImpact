@@ -1,6 +1,9 @@
 # backend/pipeline.py
 import sys, os
-sys.path.append(os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+
+from backend.crawler.news_fetcher import fetch_cnyes_news
+from backend.crawler.stock_fetcher import fetch_stock_history
 
 from crawler.news_fetcher import fetch_cnyes_news
 from crawler.stock_fetcher import fetch_stock_history
@@ -66,16 +69,25 @@ def analyze_sentiment(texts: list[str]) -> pd.DataFrame:
 
 # ── 2. 特徵工程 ───────────────────────────────────────────────
 def build_features(stock_df: pd.DataFrame, sentiment_score: float) -> pd.DataFrame:
-    """
-    結合股價技術指標 + 情緒分數，建立特徵矩陣
-    """
     df = stock_df.copy()
 
-    # 技術指標
-    df["ma5"]    = df["close"].rolling(5).mean()
-    df["ma10"]   = df["close"].rolling(10).mean()
-    df["return"] = df["close"].pct_change()
-    df["vol_ma"] = df["volume"].rolling(5).mean()
+    # 用報酬率取代絕對價格
+    df["return"]     = df["close"].pct_change()
+    df["return_2d"]  = df["close"].pct_change(2)
+    df["return_5d"]  = df["close"].pct_change(5)
+
+    # 移動平均乖離率（比絕對值更有意義）
+    df["ma5"]        = df["close"].rolling(5).mean()
+    df["ma10"]       = df["close"].rolling(10).mean()
+    df["ma5_bias"]   = (df["close"] - df["ma5"])  / df["ma5"]
+    df["ma10_bias"]  = (df["close"] - df["ma10"]) / df["ma10"]
+
+    # 波動率
+    df["volatility"] = df["return"].rolling(5).std()
+
+    # 成交量變化率
+    df["vol_change"] = df["volume"].pct_change()
+    df["vol_ma"]     = df["volume"].rolling(5).mean()
 
     # RSI
     delta = df["close"].diff()
@@ -83,11 +95,73 @@ def build_features(stock_df: pd.DataFrame, sentiment_score: float) -> pd.DataFra
     loss  = (-delta.clip(upper=0)).rolling(14).mean()
     df["rsi"] = 100 - (100 / (1 + gain / loss.replace(0, 1e-9)))
 
-    # 情緒分數（同一個值貼到每一行）
+    # 情緒分數
     df["sentiment"] = sentiment_score
 
     df = df.dropna()
     return df
+
+
+FEATURE_COLS = [
+    "return", "return_2d", "return_5d",
+    "ma5_bias", "ma10_bias",
+    "volatility", "vol_change",
+    "rsi", "sentiment"
+]
+
+def train_and_predict(df: pd.DataFrame, days: int = 5) -> dict:
+    df = df.copy()
+
+    # 預測明天的報酬率（不是絕對價格）
+    df["target"] = df["close"].pct_change().shift(-1)
+    df = df.dropna()
+
+    X = df[FEATURE_COLS].values
+    y = df["target"].values
+
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    model = GradientBoostingRegressor(
+        n_estimators=200,
+        max_depth=3,
+        learning_rate=0.05,
+        random_state=42
+    )
+    model.fit(X_scaled, y)
+
+    # 滾動預測 N 天
+    last_close = df["close"].iloc[-1]
+    last_row   = df[FEATURE_COLS].iloc[-1].copy()
+    predictions = []
+    current_price = last_close
+
+    for _ in range(days):
+        x = scaler.transform([last_row.values])
+        pred_return = model.predict(x)[0]
+        # 限制單日預測幅度在 ±5%（防止極端值）
+        pred_return = np.clip(pred_return, -0.05, 0.05)
+        next_price  = current_price * (1 + pred_return)
+        predictions.append(round(next_price, 2))
+
+        # 更新特徵
+        last_row["return"]     = pred_return
+        last_row["return_2d"]  = pred_return
+        last_row["return_5d"]  = pred_return
+        current_price = next_price
+
+    last_date  = df.index[-1]
+    pred_dates = pd.bdate_range(start=last_date, periods=days + 1)[1:]
+
+    return {
+        "last_price":  round(last_close, 2),
+        "predictions": predictions,
+        "dates":       [str(d.date()) for d in pred_dates],
+        "feature_importance": dict(zip(
+            FEATURE_COLS,
+            [round(v, 4) for v in model.feature_importances_]
+        ))
+    }
 
 
 # ── 3. 預測模型 ───────────────────────────────────────────────

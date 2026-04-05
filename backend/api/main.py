@@ -3,11 +3,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import sys, os
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-from api.intent_parser import parse_intent, generate_followup_question
-from api.conversation_manager import ConversationManager
-from pipeline import run_pipeline
+# 部署環境路徑修正
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+sys.path.insert(0, ROOT)
+sys.path.insert(0, os.path.join(ROOT, "backend"))
+
+from backend.api.intent_parser import parse_intent, generate_followup_question
+from backend.api.conversation_manager import ConversationManager
+from backend.pipeline import run_pipeline
 
 app = FastAPI(title="EventImpact API")
 
