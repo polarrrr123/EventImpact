@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from transformers import pipeline as hf_pipeline
 import pandas as pd
 import numpy as np
+import torch
 
 load_dotenv(dotenv_path="../.env")
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
