@@ -55,7 +55,7 @@ def analyze_sentiment(texts: list[str]) -> pd.DataFrame:
         )
         english = trans.choices[0].message.content.strip()
 
-        scores = sentiment_model(english[:512])[0]
+        scores = get_sentiment_model()(english[:512])[0]
         score_dict = {s["label"]: s["score"] for s in scores}
 
         results.append({
