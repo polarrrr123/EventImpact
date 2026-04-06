@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.preprocessing import StandardScaler
+from model.lstm_model import train_and_predict_lstm
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"))
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
@@ -121,7 +122,6 @@ def train_and_predict(df: pd.DataFrame, days: int = 5) -> dict:
 
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
-
     model = GradientBoostingRegressor(
         n_estimators=200,
         max_depth=3,
@@ -194,7 +194,7 @@ def run_pipeline(context: dict) -> dict:
 
     # Step 4：預測
     print("[4/4] 預測中...")
-    pred_result = train_and_predict(feature_df, days=days)
+    pred_result = train_and_predict_lstm(feature_df, days=days)
 
     return {
         "event":          event,

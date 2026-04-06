@@ -1,7 +1,8 @@
 # backend/api/conversation_manager.py
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from backend.api.intent_parser import parse_intent, generate_followup_question
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+from api.intent_parser import parse_intent, generate_followup_question
 
 class ConversationManager:
     def __init__(self):
