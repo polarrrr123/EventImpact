@@ -22,6 +22,7 @@ export default function Navbar() {
           <>
             <Link to="/">分析</Link>
             <Link to="/portfolio">我的倉庫</Link>
+            <Link to="/alerts">預警</Link>
             <span className="navbar-user">👤 {user.username}</span>
             <button onClick={handleLogout} className="btn-logout">登出</button>
           </>
