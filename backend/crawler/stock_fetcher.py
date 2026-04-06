@@ -13,7 +13,11 @@ TICKER_NAME = {
 def fetch_stock_history(ticker: str, days: int = 120) -> pd.DataFrame:
     end   = datetime.today()
     start = end - timedelta(days=days)
-
+    #自動補上 .TW
+    if ticker.isdigit():
+        ticker = ticker + ".TW"
+    elif "." not in ticker:
+        ticker = ticker + ".TW"
     df = yf.download(ticker, start=start, end=end, auto_adjust=True, progress=False)
     df = df[["Open", "High", "Low", "Close", "Volume"]].copy()
     df.columns = ["open", "high", "low", "close", "volume"]
