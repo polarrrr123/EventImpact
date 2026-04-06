@@ -206,7 +206,7 @@ def run_pipeline(context: dict) -> dict:
         "last_price":     pred_result["last_price"],
         "predictions":    pred_result["predictions"],
         "pred_dates":     pred_result["dates"],
-        "feature_importance": pred_result["feature_importance"],
+        "feature_importance": pred_result.get("feature_importance", {}),
         "sentiment_detail":   sentiment_df[
             ["text", "sentiment_score"]
         ].to_dict("records")
