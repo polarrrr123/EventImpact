@@ -11,3 +11,8 @@ requests
 beautifulsoup4
 transformers
 torch
+sqlalchemy
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+bcrypt==4.0.1
