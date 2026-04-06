@@ -4,7 +4,7 @@ import ChatWindow from "./components/ChatWindow"
 import AnalysisPanel from "./components/AnalysisPanel"
 import "./App.css"
 
-const API = "https://eventimpact-production.up.railway.app"
+const API = "https://polarrrr123-eventimpact-api.hf.space"
 const SESSION_ID = "user_" + Math.random().toString(36).slice(2, 8)
 
 export default function App() {
