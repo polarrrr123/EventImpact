@@ -2,7 +2,6 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from backend.api.intent_parser import parse_intent, generate_followup_question
-import json
 
 class ConversationManager:
     def __init__(self):

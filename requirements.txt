@@ -1,14 +1,13 @@
-fastapi
-uvicorn
-pydantic
-python-dotenv
-groq
-requests
-beautifulsoup4
-yfinance
-pandas
-numpy
-scikit-learn
---extra-index-url https://download.pytorch.org/whl/cpu
-torch==2.4.0+cpu
-transformers
+fastapi==0.115.0
+uvicorn==0.30.0
+pydantic==2.0.0
+groq==0.9.0
+python-dotenv==1.0.0
+yfinance==0.2.40
+pandas==2.2.0
+numpy==1.26.0
+scikit-learn==1.4.0
+requests==2.31.0
+beautifulsoup4==4.12.0
+transformers==4.40.0
+torch==2.2.0

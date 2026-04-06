@@ -42,3 +42,8 @@ frontend/.vite/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# HF Spaces 不支援二進位檔案直接推送
+*.png
+*.jpg
+*.jpeg
