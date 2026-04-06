@@ -103,9 +103,10 @@ def build_features(stock_df: pd.DataFrame, sentiment_score: float) -> pd.DataFra
     # 情緒分數
     df["sentiment"] = sentiment_score
 
+    # 清理 inf 和 NaN
+    df = df.replace([float('inf'), float('-inf')], float('nan'))
     df = df.dropna()
     return df
-
 
 # ── 3. 預測模型 ───────────────────────────────────────────────
 def train_and_predict(df: pd.DataFrame, days: int = 5) -> dict:
