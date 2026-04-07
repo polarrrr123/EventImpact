@@ -38,22 +38,23 @@ EventImpact 是一個結合自然語言處理、深度學習與全端工程的 A
 - **綜合評分預警系統** — LSTM 預測跌幅 + RSI + 均線死叉 + 新聞情緒，100 分制風險評估
 
 ###  系統架構
-使用者輸入自然語言
-↓
-Groq (Llama 3.1) 語意解析
-↓
-對話管理器（收集事件、股票、天數）
-↓
-┌─────────────────────────────────┐
-│  Google News RSS 爬蟲            │
-│  FinBERT 情緒分析                │
-│  yfinance 股價資料               │
-│  技術指標特徵工程                  │
-└─────────────────────────────────┘
-↓
-LSTM 深度學習預測模型
-↓
-React 前端視覺化 + 預警系統
+
+    使用者輸入自然語言
+            ↓
+    Groq (Llama 3.1) 語意解析
+            ↓
+    對話管理器（收集事件、股票、天數）
+            ↓
+    ┌─────────────────────────────────┐
+    │  Google News RSS 爬蟲            │
+    │  FinBERT 情緒分析                │
+    │  yfinance 股價資料               │
+    │  技術指標特徵工程                  │
+    └─────────────────────────────────┘
+            ↓
+    LSTM 深度學習預測模型
+            ↓
+    React 前端視覺化 + 預警系統
 
 ###  技術架構
 
@@ -119,11 +120,14 @@ npm run dev
 ```
 
 #### 環境變數
+```
 GROQ_API_KEY=your_groq_api_key
 DATABASE_URL=your_database_url
 SECRET_KEY=your_jwt_secret_key
+```
 
 ###  專案結構
+```
 EventImpact/
 ├── backend/
 │   ├── api/
@@ -159,7 +163,7 @@ EventImpact/
 ├── Dockerfile
 ├── app.py
 └── requirements_hf.txt
-
+```
 ---
 
 ##  English Version
