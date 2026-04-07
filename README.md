@@ -39,10 +39,10 @@ EventImpact 是一個結合自然語言處理、深度學習與全端工程的 A
 
 ### 畫面預覽 / Screenshots
 
-![Portfolio](docs/登入.png)
+![login](docs/登入頁面.png)
 ![Chat](docs/分析頁.png)
 ![Alert](docs/警報頁面.png)
-![Portfolio](docs/股票倉庫.png)
+![Portfolio](docs/股票倉庫頁面.png)
 
 
 ###  系統架構
