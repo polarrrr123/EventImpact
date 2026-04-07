@@ -37,6 +37,14 @@ EventImpact 是一個結合自然語言處理、深度學習與全端工程的 A
 - **個人股票倉庫** — 持股管理，資料儲存於雲端資料庫
 - **綜合評分預警系統** — LSTM 預測跌幅 + RSI + 均線死叉 + 新聞情緒，100 分制風險評估
 
+### 畫面預覽 / Screenshots
+
+![Portfolio](docs/登入.png)
+![Chat](docs/分析頁.png)
+![Alert](docs/警報頁面.png)
+![Portfolio](docs/股票倉庫.png)
+
+
 ###  系統架構
 
     使用者輸入自然語言
