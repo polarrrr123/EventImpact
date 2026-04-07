@@ -43,7 +43,9 @@ frontend/.vite/
 Thumbs.db
 desktop.ini
 
-# HF Spaces 不支援二進位檔案直接推送
-*.png
-*.jpg
-*.jpeg
+# 只忽略根目錄的圖片，允許 docs/ 資料夾的截圖
+/docs/*.png 改成不忽略
+
+# 忽略上傳的資料
+data/*.csv
+data/*.json
