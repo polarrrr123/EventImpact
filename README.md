@@ -171,7 +171,7 @@ EventImpact/
 
 ---
 
-## 🇺🇸 English Version
+## English Version
 
 ### Overview
 
