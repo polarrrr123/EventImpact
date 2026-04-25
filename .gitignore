@@ -1,4 +1,4 @@
-# 環境變數（重要！API key 不能推上去）
+# 環境變數
 .env
 
 # Python
@@ -6,7 +6,6 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.Python
 *.egg-info/
 dist/
 build/
@@ -20,7 +19,7 @@ venv/
 .ipynb_checkpoints/
 notebooks/.ipynb_checkpoints/
 
-# 資料檔案（太大）
+# 資料檔案
 data/
 
 # Node.js
@@ -43,9 +42,16 @@ frontend/.vite/
 Thumbs.db
 desktop.ini
 
-# 只忽略根目錄的圖片，允許 docs/ 資料夾的截圖
-/docs/*.png 改成不忽略
+# 圖片（HF Spaces 不接受二進位檔案）
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
 
-# 忽略上傳的資料
+# 資料檔案
 data/*.csv
 data/*.json
+
+# 本地資料庫
+*.db
