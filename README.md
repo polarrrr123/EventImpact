@@ -25,25 +25,17 @@ pinned: false
 
 ### 專案簡介
 
-EventImpact 是一個結合自然語言處理、深度學習與全端工程的 AI 股票分析平台。使用者透過對話式介面輸入事件與股票，系統自動爬取新聞、分析情緒、預測股價，並提供個人化的持股預警服務。
+EventImpact 是一個結合自然語言處理、深度學習與全端工程的 AI 股票分析平台。使用者透過對話式介面輸入事件與股票，系統自動爬取新聞、分析情緒、預測股價，並提供個人化的持股預警服務。使用者可透過 Google 帳號登入，無需註冊。
 
-### 功能特色
+###  功能特色
 
-- **對話式 AI 介面** — 自然語言輸入，Groq (Llama 3.1) 自動解析事件與股票標的
-- **即時新聞爬蟲** — Google News RSS 抓取最新相關新聞（100+ 則）
-- **FinBERT 情緒分析** — 金融專用 BERT 模型，中文新聞翻譯後分析正負面情緒
-- **LSTM 深度學習預測** — 雙層 LSTM 模型，結合技術指標預測未來 5 日股價走勢
-- **使用者認證系統** — JWT 登入/註冊，bcrypt 密碼加密
-- **個人股票倉庫** — 持股管理，資料儲存於雲端資料庫
-- **綜合評分預警系統** — LSTM 預測跌幅 + RSI + 均線死叉 + 新聞情緒，100 分制風險評估
-
-### 畫面預覽 / Screenshots
-
-![login](docs/登入頁面.png)
-![Chat](docs/分析頁.png)
-![Alert](docs/警報頁面.png)
-![Portfolio](docs/股票倉庫頁面.png)
-
+-  **對話式 AI 介面** — 自然語言輸入，Groq (Llama 3.1) 自動解析事件與股票標的
+-  **即時新聞爬蟲** — Google News RSS 抓取最新相關新聞（100+ 則）
+-  **FinBERT 情緒分析** — 金融專用 BERT 模型，中文新聞翻譯後分析正負面情緒
+-  **LSTM 深度學習預測** — 雙層 LSTM 模型，結合技術指標預測未來 5 日股價走勢
+-  **Google OAuth 登入** — 使用 Google 帳號一鍵登入，無需註冊帳號
+-  **個人股票倉庫** — 持股管理，資料永久儲存於雲端資料庫
+-  **綜合評分預警系統** — LSTM 預測跌幅 + RSI + 均線死叉 + 新聞情緒，100 分制風險評估
 
 ###  系統架構
 
@@ -75,7 +67,7 @@ EventImpact 是一個結合自然語言處理、深度學習與全端工程的 A
 | 預測模型 | LSTM (PyTorch, 2-layer, hidden=64) |
 | 股價資料 | yfinance |
 | 新聞資料 | Google News RSS |
-| 認證 | JWT + bcrypt |
+| 認證 | Google OAuth 2.0 + JWT |
 | 資料庫 | SQLite (本地) / PostgreSQL (Supabase) |
 | ORM | SQLAlchemy |
 | 部署 | HuggingFace Spaces (後端) + Vercel (前端) |
@@ -106,7 +98,7 @@ EventImpact 是一個結合自然語言處理、深度學習與全端工程的 A
 | 均線死叉 | 20分 | MA5 跌破 MA10 |
 | 新聞情緒 | 20分 | FinBERT 負面情緒越強分數越高 |
 
-> 總分 ≥ 60 → (紅色) 高風險｜總分 ≥ 35 → (黃色) 需注意｜總分 < 35 → (綠色) 風險偏低
+> 總分 ≥ 60 → 🔴 高風險｜總分 ≥ 35 → 🟡 需注意｜總分 < 35 → 🟢 風險偏低
 
 ###  本地開發
 
@@ -115,7 +107,7 @@ EventImpact 是一個結合自然語言處理、深度學習與全端工程的 A
 conda create -n event_impact python=3.11
 conda activate event_impact
 pip install -r requirements_hf.txt
-cp .env.example .env  # 填入 GROQ_API_KEY 和 DATABASE_URL
+cp .env.example .env  # 填入所有環境變數
 cd backend/api
 uvicorn main:app --reload --port 8000
 ```
@@ -128,14 +120,18 @@ npm run dev
 ```
 
 #### 環境變數
-```
+```bash
 GROQ_API_KEY=your_groq_api_key
 DATABASE_URL=your_database_url
 SECRET_KEY=your_jwt_secret_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
+FRONTEND_URL=http://localhost:5173
 ```
 
 ###  專案結構
-```
+```bash
 EventImpact/
 ├── backend/
 │   ├── api/
@@ -144,7 +140,7 @@ EventImpact/
 │   │   ├── intent_parser.py         # Groq 語意解析
 │   │   ├── conversation_manager.py  # 對話狀態管理
 │   │   └── route/
-│   │       ├── auth_routes.py       # 註冊/登入 API
+│   │       ├── auth_routes.py       # Google OAuth API
 │   │       ├── portfolio_routes.py  # 股票倉庫 API
 │   │       └── alert_routes.py      # 預警掃描 API
 │   ├── crawler/
@@ -165,20 +161,21 @@ EventImpact/
 │       │   └── layout/Navbar.jsx
 │       └── pages/
 │           ├── LoginPage.jsx
-│           ├── RegisterPage.jsx
+│           ├── AuthCallbackPage.jsx
 │           ├── PortfolioPage.jsx
 │           └── AlertPage.jsx
 ├── Dockerfile
 ├── app.py
 └── requirements_hf.txt
 ```
+
 ---
 
-##  English Version
+## 🇺🇸 English Version
 
 ### Overview
 
-EventImpact is a full-stack AI stock analysis platform combining NLP, deep learning, and web engineering. Users interact through a conversational interface to analyze how news events impact specific stocks, with personalized portfolio monitoring and alert services.
+EventImpact is a full-stack AI stock analysis platform combining NLP, deep learning, and web engineering. Users interact through a conversational interface to analyze how news events impact specific stocks, with personalized portfolio monitoring and alert services. Login is handled through Google OAuth — no registration required.
 
 ###  Features
 
@@ -186,9 +183,28 @@ EventImpact is a full-stack AI stock analysis platform combining NLP, deep learn
 -  **Real-time News Crawler** — Google News RSS fetching 100+ relevant articles
 -  **FinBERT Sentiment Analysis** — Finance-domain BERT model for news sentiment scoring
 -  **LSTM Deep Learning Prediction** — 2-layer LSTM predicting 5-day stock price trends
--  **User Authentication** — JWT login/register with bcrypt password hashing
+-  **Google OAuth Login** — Sign in with Google account, no registration needed
 -  **Personal Stock Portfolio** — Holdings management with persistent cloud storage
 -  **Composite Alert System** — Risk scoring via LSTM + RSI + Moving Average + Sentiment
+
+###  System Architecture
+
+    User types natural language input
+            ↓
+    Groq (Llama 3.1) intent parsing
+            ↓
+    Conversation manager (collect event, ticker, days)
+            ↓
+    ┌─────────────────────────────────┐
+    │  Google News RSS crawler         │
+    │  FinBERT sentiment analysis      │
+    │  yfinance stock price data       │
+    │  Technical indicator features    │
+    └─────────────────────────────────┘
+            ↓
+    LSTM deep learning prediction model
+            ↓
+    React frontend visualization + alert system
 
 ###  Tech Stack
 
@@ -201,13 +217,30 @@ EventImpact is a full-stack AI stock analysis platform combining NLP, deep learn
 | Prediction | LSTM (PyTorch, 2-layer, hidden=64) |
 | Market Data | yfinance |
 | News Data | Google News RSS |
-| Auth | JWT + bcrypt |
+| Auth | Google OAuth 2.0 + JWT |
 | Database | SQLite (local) / PostgreSQL (Supabase) |
 | ORM | SQLAlchemy |
 | Deployment | HuggingFace Spaces (API) + Vercel (Frontend) |
 
-###  Alert Scoring System (Max 100pts)
+###  Model Details
 
+#### LSTM Prediction Model
+- Architecture: 2-layer LSTM (hidden_size=64) + Fully Connected Layer
+- Input: Past 20 days of 9 features (technical indicators + sentiment score)
+- Output: N-day closing price forecast
+- Training: 80/20 train-test split, 80 epochs, Adam optimizer
+
+#### Feature Engineering
+| Feature | Description |
+|---------|-------------|
+| return / return_2d / return_5d | 1-day, 2-day, 5-day return rates |
+| ma5_bias / ma10_bias | Moving average bias ratio |
+| volatility | 5-day return rate standard deviation |
+| vol_change | Volume change rate |
+| rsi | 14-day Relative Strength Index |
+| sentiment | FinBERT news sentiment score |
+
+#### Alert Scoring System (Max 100pts)
 | Signal | Weight | Trigger |
 |--------|--------|---------|
 | LSTM predicted drop | 40pts | Larger predicted decline = higher score |
@@ -215,24 +248,80 @@ EventImpact is a full-stack AI stock analysis platform combining NLP, deep learn
 | Death cross | 20pts | MA5 crosses below MA10 |
 | News sentiment | 20pts | Stronger negative sentiment = higher score |
 
-> Score ≥ 60 → (Red) High Risk｜Score ≥ 35 → (Yellow) Warning｜Score < 35 → (Green) Safe
+> Score ≥ 60 → 🔴 High Risk｜Score ≥ 35 → 🟡 Warning｜Score < 35 → 🟢 Safe
 
 ###  Quick Start
-```bash
-# Backend
-conda create -n event_impact python=3.11 && conda activate event_impact
-pip install -r requirements_hf.txt
-cp .env.example .env
-cd backend/api && uvicorn main:app --reload --port 8000
 
-# Frontend
-cd frontend && npm install && npm run dev
+#### Backend
+```bash
+conda create -n event_impact python=3.11
+conda activate event_impact
+pip install -r requirements_hf.txt
+cp .env.example .env  # fill in all environment variables
+cd backend/api
+uvicorn main:app --reload --port 8000
 ```
 
+#### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+#### Environment Variables
+```bash
+GROQ_API_KEY=your_groq_api_key
+DATABASE_URL=your_database_url
+SECRET_KEY=your_jwt_secret_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
+FRONTEND_URL=http://localhost:5173
+```
+
+###  Project Structure
+```bash
+EventImpact/
+├── backend/
+│   ├── api/
+│   │   ├── main.py                  # FastAPI main app
+│   │   ├── auth.py                  # JWT authentication
+│   │   ├── intent_parser.py         # Groq intent parsing
+│   │   ├── conversation_manager.py  # Conversation state management
+│   │   └── route/
+│   │       ├── auth_routes.py       # Google OAuth API
+│   │       ├── portfolio_routes.py  # Portfolio CRUD API
+│   │       └── alert_routes.py      # Alert scanning API
+│   ├── crawler/
+│   │   ├── news_fetcher.py          # Google News crawler
+│   │   └── stock_fetcher.py         # yfinance stock data
+│   ├── model/
+│   │   ├── lstm_model.py            # LSTM prediction model
+│   │   └── evaluator.py             # Model evaluation & backtesting
+│   ├── pipeline.py                  # Main analysis pipeline
+│   └── database.py                  # SQLAlchemy ORM
+├── frontend/
+│   └── src/
+│       ├── App.jsx
+│       ├── context/AuthContext.jsx
+│       ├── components/
+│       │   ├── ChatWindow.jsx
+│       │   ├── AnalysisPanel.jsx
+│       │   └── layout/Navbar.jsx
+│       └── pages/
+│           ├── LoginPage.jsx
+│           ├── AuthCallbackPage.jsx
+│           ├── PortfolioPage.jsx
+│           └── AlertPage.jsx
+├── Dockerfile
+├── app.py
+└── requirements_hf.txt
+```
 ---
 
 ##  Author
 
-**Fu Yu-Cheng (傅裕成)**  
-M.S. Student, Information Management, National Chung Hsing University  
+**Fu Yu-Cheng (傅裕成)**
+M.S. Student, Information Management, National Chung Hsing University
 [GitHub](https://github.com/polarrrr123)
