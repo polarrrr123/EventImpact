@@ -6,10 +6,11 @@ import Navbar from "./components/layout/Navbar"
 import ChatWindow from "./components/ChatWindow"
 import AnalysisPanel from "./components/AnalysisPanel"
 import LoginPage from "./pages/LoginPage"
-import RegisterPage from "./pages/RegisterPage"
+
 import PortfolioPage from "./pages/PortfolioPage"
 import "./App.css"
 import AlertPage from "./pages/AlertPage"
+import AuthCallbackPage from "./pages/AuthCallbackPage"
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:8000"
 const SESSION_ID = "user_" + Math.random().toString(36).slice(2, 8)
@@ -79,8 +80,8 @@ function AppLayout() {
     <div className="app">
       <Navbar />
       <Routes>
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/login"     element={<LoginPage />} />
-        <Route path="/register"  element={<RegisterPage />} />
         <Route path="/" element={
           <ProtectedRoute><MainPage /></ProtectedRoute>
         } />

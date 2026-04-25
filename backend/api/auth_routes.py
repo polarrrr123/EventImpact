@@ -63,7 +63,7 @@ async def google_callback(code: str, db: Session = Depends(get_db)):
             google_id  = google_user["id"],
             email      = google_user["email"],
             username   = google_user["name"],
-            avatar_url = google_user.get("picture"),
+            avatar_url = google_user.get("picture"), 
         )
         db.add(user)
         db.commit()
